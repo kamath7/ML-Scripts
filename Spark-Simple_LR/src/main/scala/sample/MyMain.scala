@@ -12,10 +12,13 @@ object MyMain {
   def main(args: Array[String]):Unit = {
     Logger.getLogger("org").setLevel(Level.ERROR)
 
+    //Creating spark session
     val spark = SparkSession.builder().appName("MyAwesomeModel").master("local[*]").getOrCreate()
 
+    //Reading the dataset
     val dataset = spark.read.format("csv").option("header","true").option("inferSchema","true").load("D:\\Code\\MachineLearning-Scripts\\Spark-Simple_LR\\src\\main\\scala\\sample\\Salary_Data.csv")
 
+    //Preprocessing
     val assembler = new VectorAssembler().setInputCols(Array("YearsExperience")).setOutputCol("features")
 
     val assembledData = assembler.transform(dataset).select("features","Salary")
@@ -28,6 +31,7 @@ object MyMain {
 
     val model = lrModel.fit(trainingData)
 
+    //Testing predictions with our test data
     val prediction = model.transform(testData)
 
     import spark.implicits._
