@@ -1,15 +1,16 @@
 package sample
 
-import org.apache.spark.SparkContext
+import org.apache.log4j._
 import org.apache.spark.ml.regression.LinearRegression
 import org.apache.spark.ml.feature.VectorAssembler
 import org.apache.spark.ml.linalg.Vectors
-import org.apache.spark.sql.types.{DoubleType, StructField, StructType}
-import org.apache.spark.sql.{Row, SparkSession}
+import org.apache.spark.sql.types.{ StructField, StructType}
+import org.apache.spark.sql.{SparkSession}
 
 
 object MyMain {
   def main(args: Array[String]):Unit = {
+    Logger.getLogger("org").setLevel(Level.ERROR)
 
     val spark = SparkSession.builder().appName("MyAwesomeModel").master("local[*]").getOrCreate()
 
@@ -29,12 +30,7 @@ object MyMain {
 
     val prediction = model.transform(testData)
 
-//    prediction.select("features","Salary","prediction").show()
-
     import spark.implicits._
-
-    // Create a new DataFrame with input features for prediction
-
     def makePrediction(yoe: Double): Unit = {
       val inputFeatures = Seq(Vectors.dense(yoe))
       val schema = StructType(Seq(StructField("features", org.apache.spark.ml.linalg.SQLDataTypes.VectorType, nullable = false)))
@@ -49,5 +45,9 @@ object MyMain {
       // Print the predicted salary
       println(s"Predicted Salary for $yoe years of experience: $predictedSalary")
     }
+
+    makePrediction(3)
+    makePrediction(6)
+    makePrediction(10)
   }
 }
