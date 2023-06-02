@@ -8,9 +8,9 @@ import org.apache.spark.sql.SparkSession
 object MyMain {
   def main(args: Array[String]):Unit = {
 
-    val spark = SparkSession.builder().appName("MyAwesomeModel").getOrCreate()
+    val spark = SparkSession.builder().appName("MyAwesomeModel").master("local[*]").getOrCreate()
 
-    val dataset = spark.read.format("csv").option("header","true").option("inferSchema","true").load("D:\\Code\\MachineLearning-Scripts\\Spark-Simple_LR\\dataset\\Salary_Data.csv")
+    val dataset = spark.read.format("csv").option("header","true").option("inferSchema","true").load("D:\\Code\\MachineLearning-Scripts\\Spark-Simple_LR\\src\\main\\scala\\sample\\Salary_Data.csv")
 
     val assembler = new VectorAssembler().setInputCols(Array("YearsExperience")).setOutputCol("features")
 
@@ -23,6 +23,12 @@ object MyMain {
     val lrModel = new LinearRegression().setLabelCol("Salary").setFeaturesCol("features")
 
     val model = lrModel.fit(trainingData)
+
+    val prediction = model.transform(testData)
+
+    prediction.select("features","Salary","prediction").show()
+
+
 
 
   }
