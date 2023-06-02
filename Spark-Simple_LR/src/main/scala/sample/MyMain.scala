@@ -12,6 +12,10 @@ object MyMain {
 
     val dataset = spark.read.format("csv").option("header","true").option("inferSchema","true").load("D:\\Code\\MachineLearning-Scripts\\Spark-Simple_LR\\dataset\\Salary_Data.csv")
 
+    val assembler = new VectorAssembler().setInputCols(Array("YearsExperience")).setOutputCol("features")
+
+    val assembledData = assembler.transform(dataset).select("features","Salary")
+
 
   }
 }
