@@ -34,20 +34,20 @@ object MyMain {
     import spark.implicits._
 
     // Create a new DataFrame with input features for prediction
-    val inputFeatures = Seq(Vectors.dense(13.0))
-    val schema = StructType(Seq(StructField("features", org.apache.spark.ml.linalg.SQLDataTypes.VectorType, nullable = false)))
-    val inputData = spark.createDataFrame(inputFeatures.map(Tuple1.apply)).toDF("features").select("features")
 
-    // Use the trained model to make predictions
-    val predictions = model.transform(inputData)
+    def makePrediction(yoe: Double): Unit = {
+      val inputFeatures = Seq(Vectors.dense(yoe))
+      val schema = StructType(Seq(StructField("features", org.apache.spark.ml.linalg.SQLDataTypes.VectorType, nullable = false)))
+      val inputData = spark.createDataFrame(inputFeatures.map(Tuple1.apply)).toDF("features").select("features")
 
-    // Access the predicted salary
-    val predictedSalary = predictions.select("prediction").first().getDouble(0)
+      // Use the trained model to make predictions
+      val predictions = model.transform(inputData)
 
-    // Print the predicted salary
-    println(s"Predicted Salary for 13 years of experience: $predictedSalary")
+      // Access the predicted salary
+      val predictedSalary = predictions.select("prediction").first().getDouble(0)
 
-
-
+      // Print the predicted salary
+      println(s"Predicted Salary for $yoe years of experience: $predictedSalary")
+    }
   }
 }
