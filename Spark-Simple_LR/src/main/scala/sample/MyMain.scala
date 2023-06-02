@@ -16,6 +16,14 @@ object MyMain {
 
     val assembledData = assembler.transform(dataset).select("features","Salary")
 
+    //Train-test split
+
+    val Array(trainingData, testData) = assembledData.randomSplit(Array(0.8, 0.2), seed = 123)
+
+    val lrModel = new LinearRegression().setLabelCol("Salary").setFeaturesCol("features")
+
+    val model = lrModel.fit(trainingData)
+
 
   }
 }
