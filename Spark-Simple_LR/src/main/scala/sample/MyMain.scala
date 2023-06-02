@@ -1,8 +1,11 @@
 package sample
 
+import org.apache.spark.SparkContext
 import org.apache.spark.ml.regression.LinearRegression
 import org.apache.spark.ml.feature.VectorAssembler
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.ml.linalg.Vectors
+import org.apache.spark.sql.types.{DoubleType, StructField, StructType}
+import org.apache.spark.sql.{Row, SparkSession}
 
 
 object MyMain {
@@ -26,8 +29,23 @@ object MyMain {
 
     val prediction = model.transform(testData)
 
-    prediction.select("features","Salary","prediction").show()
+//    prediction.select("features","Salary","prediction").show()
 
+    import spark.implicits._
+
+    // Create a new DataFrame with input features for prediction
+    val inputFeatures = Seq(Vectors.dense(13.0))
+    val schema = StructType(Seq(StructField("features", org.apache.spark.ml.linalg.SQLDataTypes.VectorType, nullable = false)))
+    val inputData = spark.createDataFrame(inputFeatures.map(Tuple1.apply)).toDF("features").select("features")
+
+    // Use the trained model to make predictions
+    val predictions = model.transform(inputData)
+
+    // Access the predicted salary
+    val predictedSalary = predictions.select("prediction").first().getDouble(0)
+
+    // Print the predicted salary
+    println(s"Predicted Salary for 13 years of experience: $predictedSalary")
 
 
 
