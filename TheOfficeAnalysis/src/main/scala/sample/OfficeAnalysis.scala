@@ -1,6 +1,6 @@
 package sample
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.functions.{avg, col, desc, floor, regexp_replace, when}
+import org.apache.spark.sql.functions.{avg, col, desc, floor, max, regexp_replace, struct, when}
 
 object OfficeAnalysis {
 
@@ -27,6 +27,15 @@ object OfficeAnalysis {
 
     val topRatedEpisodes = cleanedUpDf.orderBy(desc("ratings")).limit(10)
     topRatedEpisodes.show()
+
+
+    val bestEpisodeBySeason = cleanedUpDf.groupBy("season_cleaned")
+      .agg(max(struct(col("Ratings"), col("EpisodeTitle"))).alias("best_episode"))
+      .select("season_cleaned", "best_episode.*")
+      .orderBy("season_cleaned")
+
+    bestEpisodeBySeason.show(truncate = false)
+
     spark.stop()
   }
 }
