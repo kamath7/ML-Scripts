@@ -1,10 +1,11 @@
 package sample
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions.{avg, col, desc, floor, max, regexp_replace, struct, when}
-
+import org.apache.log4j._
 object OfficeAnalysis {
 
   def main (args: Array[String]) : Unit = {
+    Logger.getLogger("org").setLevel(Level.ERROR)
     val spark = SparkSession.builder().appName("Office").master("local[*]").getOrCreate()
 
     val df = spark.read.option("header","true").csv("D:\\Code\\MachineLearning-Scripts\\TheOfficeAnalysis\\src\\main\\scala\\sample\\the_office_series.csv")
@@ -36,6 +37,23 @@ object OfficeAnalysis {
 
     bestEpisodeBySeason.show(truncate = false)
 
+    /*
+    * +--------------+-------+----------------+
+|season_cleaned|Ratings|EpisodeTitle    |
++--------------+-------+----------------+
+|1             |8.4    |Basketball      |
+|2             |9.4    |Casino Night    |
+|3             |9.3    |The Job         |
+|4             |9.5    |Dinner Party    |
+|5             |9.7    |Stress Relief   |
+|6             |9.4    |Niagara: Part 2 |
+|7             |9.8    |Goodbye, Michael|
+|8             |8.1    |The List        |
+|9             |9.8    |Finale          |
++--------------+-------+----------------+
+
+    *
+    * */
     spark.stop()
   }
 }
