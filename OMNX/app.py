@@ -26,6 +26,8 @@ model.compile(optimizer="adam", loss="mse")
 
 model.fit(X_train_scaled, y_train, epochs=100)
 
+input_signature = [tf.TensorSpec([None, 1], tf.float32, name='x')]
+model.output_names=['output'] #Why? Refer here - https://github.com/onnx/tensorflow-onnx/issues/2319
 
-
-
+onnx_model, _ = tf2onnx.convert.from_keras(model, input_signature, opset=13)
+onnx.save(onnx_model, "lalle_model" + ".onnx")
